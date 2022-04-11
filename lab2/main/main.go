@@ -22,7 +22,7 @@ func printSlice(data []float64) {
 	}
 	fmt.Printf("%.2f", data[0])
 	for index := 1; index < len(data); index++ {
-		fmt.Printf(" %.2f", data[index])
+		fmt.Printf("	%.2f", data[index])
 	}
 	fmt.Printf("\n")
 }

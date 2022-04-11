@@ -251,6 +251,15 @@ func ComputeH(a, b, c, d, e, x, y float64) float64 {
 	return a*x*x + b*y*y + c*x*y + d*x + e*y
 }
 
+func printMatrix(matrix [][]float64) {
+	if len(matrix) == 0 {
+		return
+	}
+	for row := range matrix {
+		printSlice(matrix[row])
+	}
+}
+
 func AnalyticalMethod(data []float64) (float64, float64, float64) {
 
 	// проверяем коэффициенты игры
@@ -279,38 +288,45 @@ func ApproximationOnGrid(data []float64) (float64, float64, float64) {
 	counter := 0
 	hFinal := 0.0
 	for counter < 10 {
-		//for index := 0; index < 10; index++ {
-		fmt.Printf("шаг %d\n", index+1)
+
 		results = append(results, make([]float64, 3))
 		matrix := makeMatrixH(data, size)
-		// выводим матрицу H
-		//fmt.Println(matrix)
+		if index < 10 {
+			fmt.Printf("шаг %d\n", index+1)
+			// выводим матрицу H
+			fmt.Println("Полученная матрица H")
+			printMatrix(matrix)
+			//fmt.Println(matrix)
+		}
 		x, y, h, error := SaddlePoint(matrix)
 		xFloat := float64(x-1) / (float64(size) - 1)
 		yFloat := float64(y-1) / (float64(size) - 1)
 		y /= (size - 1)
 		if error == nil {
-			fmt.Println("Есть седловая точка:")
-			fmt.Printf("x=%.2f y=%.2f h=%.2f\n\n", xFloat, yFloat, h)
+			if index < 10 {
+				fmt.Println("Есть седловая точка:")
+				fmt.Printf("x=%.2f y=%.2f h=%.2f\n\n", xFloat, yFloat, h)
+			}
 			results[index][0] = xFloat
 			results[index][1] = yFloat
 			results[index][2] = h
 
 		} else {
-			fmt.Println("Седловой точки нет. Решаем методом Брауна-Робинсон")
+
 			aStrategy, bStrategy, h := BrownRobinson(matrix)
 			_, indexA := MaxFromSlice(aStrategy)
 			_, indexB := MaxFromSlice(bStrategy)
 			results[index][0] = float64(indexA) / (float64(size) - 1)
 			results[index][1] = float64(indexB) / (float64(size) - 1)
 			results[index][2] = h
-			fmt.Printf("x=%.2f y=%.2f h=%.2f\n\n",
-				results[index][0],
-				results[index][1],
-				results[index][2],
-			)
-			// че то с Брауном-Робинсон
-			//fmt.Println(BrownRobinson(matrix))
+			if index < 10 {
+				fmt.Println("Седловой точки нет. Решаем методом Брауна-Робинсон")
+				fmt.Printf("x=%.2f y=%.2f h=%.2f\n\n",
+					results[index][0],
+					results[index][1],
+					results[index][2],
+				)
+			}
 		}
 		if hFinal == 0 {
 			hFinal = results[index][2]
@@ -319,6 +335,14 @@ func ApproximationOnGrid(data []float64) (float64, float64, float64) {
 		} else {
 			counter = 0
 			hFinal = results[index][2]
+		}
+		if counter == 10 {
+			fmt.Printf("Ответ получен на шаге %d\n", index+1)
+			fmt.Printf("x=%.2f y=%.2f h=%.2f\n\n",
+				results[index][0],
+				results[index][1],
+				results[index][2],
+			)
 		}
 		//fmt.Printf("counter = %d 	h = %.2f	hfinal = %.2f", counter, results[index][2], hFinal)
 		//fmt.Println()
