@@ -175,4 +175,5 @@ func main() {
 	fmt.Printf("Стратегия игрорка B: ")
 	printSlice(bStrategy)
 	fmt.Printf("Цена игры равна %.2f\n", value)
+
 }

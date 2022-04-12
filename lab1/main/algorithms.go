@@ -5,6 +5,11 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/plotutil"
+	"gonum.org/v1/plot/vg"
 )
 
 type Step struct {
@@ -184,6 +189,42 @@ func SaddlePoint(matrix [][]float64) (int, int, float64, error) {
 	}
 }
 
+func sliceToPoints(data []float64) plotter.XYs {
+	pts := make(plotter.XYs, len(data))
+	for i := range pts {
+		pts[i].X = float64(i)
+		pts[i].Y = data[i]
+	}
+	return pts
+}
+
+func drawPlot(steps []Step) error {
+	rand.Seed(int64(0))
+
+	p := plot.New()
+
+	p.Title.Text = "lab 1 results"
+	p.X.Label.Text = "Steps"
+	p.Y.Label.Text = "Value"
+
+	data := make([]float64, len(steps))
+	for i := range steps {
+		data[i] = steps[i].Epsilon
+	}
+
+	err := plotutil.AddLinePoints(p,
+		"Epsilon", sliceToPoints(data),
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := p.Save(4*vg.Inch, 4*vg.Inch, "points.png"); err != nil {
+		return err
+	}
+	return nil
+}
+
 func BrownRobinson(matrix [][]float64) ([]float64, []float64, float64) {
 	strategics := len(matrix)
 	steps := make([]Step, 0)
@@ -239,6 +280,10 @@ func BrownRobinson(matrix [][]float64) ([]float64, []float64, float64) {
 	}
 
 	PrintSteps(steps)
+
+	if err := drawPlot(steps); err != nil {
+		panic(err)
+	}
 
 	return aStrategy, bStrategy, value
 }
