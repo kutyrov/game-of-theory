@@ -330,7 +330,7 @@ func ApproximationOnGrid(data []float64) (float64, float64, float64) {
 		}
 		if hFinal == 0 {
 			hFinal = results[index][2]
-		} else if Abs(hFinal-results[index][2]) < 0.1 {
+		} else if Abs(hFinal-results[index][2]) < 0.01 {
 			counter += 1
 		} else {
 			counter = 0
