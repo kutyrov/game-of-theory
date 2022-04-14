@@ -350,7 +350,17 @@ func ApproximationOnGrid(data []float64) (float64, float64, float64) {
 		size += 1
 	}
 	steps := len(results) - 1
-	return results[steps][0], results[steps][1], results[steps][2]
+	strategyA, strategyB, value := 0.0, 0.0, 0.0
+	for index := (steps - counter + 1); index <= steps; index++ {
+		strategyA += results[index][0]
+		strategyB += results[index][1]
+		value += results[index][2]
+	}
+	strategyA /= float64(counter)
+	strategyB /= float64(counter)
+	value /= float64(counter)
+	return strategyA, strategyB, value
+	// return results[steps][0], results[steps][1], results[steps][2]
 }
 
 func Abs(x float64) float64 {
