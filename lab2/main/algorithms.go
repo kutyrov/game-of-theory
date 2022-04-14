@@ -228,7 +228,17 @@ func BrownRobinson(matrix [][]float64) ([]float64, []float64, float64) {
 	}
 
 	// Получаем итоговое решение из таблицы
-	value := (steps[stepNumber].EvaluationUp + steps[stepNumber].EvaluationDown) / 2
+	//value := (steps[stepNumber].EvaluationUp + steps[stepNumber].EvaluationDown) / 2
+	evUp := make([]float64, len(steps))
+	evDown := make([]float64, len(steps))
+	for index := range steps {
+		evUp[index] = steps[index].EvaluationUp
+		evDown[index] = steps[index].EvaluationDown
+	}
+	//value := (steps[stepNumber].EvaluationUp + steps[stepNumber].EvaluationDown) / 2
+	maxValue, _ := MaxFromSlice(evDown)
+	minValue, _ := MinFromSlice(evUp)
+	value := (maxValue + minValue) / 2
 	aStrategy := make([]float64, strategics)
 	bStrategy := make([]float64, strategics)
 	for index := range steps {
