@@ -22,7 +22,7 @@ func printSlice(data []float64) {
 	}
 	fmt.Printf("%.2f", data[0])
 	for index := 1; index < len(data); index++ {
-		fmt.Printf(" %.2f", data[index])
+		fmt.Printf("	%.2f", data[index])
 	}
 	fmt.Printf("\n")
 }
@@ -132,12 +132,15 @@ func main() {
 	fmt.Printf("Размеры матрицы %d на %d\n", rows, columns)
 	fmt.Println(rows, columns)
 	fmt.Println("\nСама матрица:")
-	for index := range matrix {
-		for jindex := range matrix[index] {
-			fmt.Printf("%d ", int(matrix[index][jindex]))
-		}
-		fmt.Println()
-	}
+
+	printMatrix(matrix)
+
+	// for index := range matrix {
+	// 	for jindex := range matrix[index] {
+	// 		fmt.Printf("%d ", int(matrix[index][jindex]))
+	// 	}
+	// 	fmt.Println()
+	// }
 
 	// проверим наличие седловой точки
 	aDominant, bDominant, value, err := SaddlePoint(matrix)
