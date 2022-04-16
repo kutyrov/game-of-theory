@@ -61,8 +61,44 @@ func eqNash(matrix [][]Win) []pair {
 	return strategies
 }
 
+func checkPoint(matrix [][]Win, i, j int) bool {
+	cell := matrix[i][j]
+	flag := true
+	for index, rows := range matrix {
+		for jindex, data := range rows {
+			if data.AWin >= cell.AWin &&
+				data.BWin >= cell.BWin &&
+				(i != index || jindex != j) {
+				flag = false
+			}
+		}
+	}
+	// for index := range matrix {
+	// 	if matrix[index][j].AWin >= cell.AWin &&
+	// 		matrix[index][j].BWin >= cell.BWin &&
+	// 		index != i {
+	// 		flag = false
+	// 		break
+	// 	}
+	// 	if matrix[i][index].AWin >= cell.AWin &&
+	// 		matrix[i][index].BWin >= cell.BWin &&
+	// 		index != j {
+	// 		flag = false
+	// 		break
+	// 	}
+	// }
+	return flag
+}
+
 func eqPareto(matrix [][]Win) []pair {
 	strategies := make([]pair, 0)
+	for index := range matrix {
+		for jindex := range matrix {
+			if checkPoint(matrix, index, jindex) {
+				strategies = append(strategies, pair{index, jindex})
+			}
+		}
+	}
 
 	return strategies
 }

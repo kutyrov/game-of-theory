@@ -17,6 +17,21 @@ const matrixSize = 10
 const defaultMatrixSize = 2
 const eps = 0.1
 
+func crossing(a, b []pair) []pair {
+	//to do
+	return nil
+}
+
+func printCells(matrix [][]Win, data []pair) {
+	for index := range data {
+		fmt.Printf(
+			"(%d %d)\n",
+			int(matrix[data[index].first][data[index].second].AWin),
+			int(matrix[data[index].first][data[index].second].BWin),
+		)
+	}
+}
+
 func getMatrix(path string) ([][]Win, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -51,38 +66,26 @@ func main() {
 	printWins(matrix)
 	resNash := eqNash(matrix)
 	fmt.Printf("\nНаходим равновесие по Нэшу\n")
-	//fmt.Println(resNash)
 	if len(resNash) == 0 {
 		fmt.Println("Решений нет")
 	}
-	for index := range resNash {
-		fmt.Printf(
-			"(%d %d)\n",
-			int(matrix[resNash[index].first][resNash[index].second].AWin),
-			int(matrix[resNash[index].first][resNash[index].second].BWin),
-		)
-	}
+	printCells(matrix, resNash)
 	fmt.Printf("\nНаходим оптимум по Парето\n")
-	fmt.Println(eqPareto(matrix))
+	printCells(matrix, eqPareto(matrix))
 
 	fmt.Println("\n\nПроверяем функции на игре \"Перекресток\"")
 	matrix, err := getMatrix(crossroadPath)
 	if err != nil {
 		panic(err)
 	}
+	matrix[0][1].AWin -= eps
+	matrix[1][0].BWin -= eps
 	printWins(matrix)
 	fmt.Printf("Находим равновесие по Нэшу\n")
 	resNash = eqNash(matrix)
-	for index := range resNash {
-		fmt.Printf(
-			"(%d %d)\n",
-			int(matrix[resNash[index].first][resNash[index].second].AWin),
-			int(matrix[resNash[index].first][resNash[index].second].BWin),
-		)
-	}
-	//fmt.Println(eqNash(matrix))
-	// fmt.Printf("\nНаходим оптимум по Парето\n")
-	// fmt.Println(eqPareto(matrix))
+	printCells(matrix, resNash)
+	fmt.Printf("\nНаходим оптимум по Парето\n")
+	printCells(matrix, eqPareto(matrix))
 
 	fmt.Println("\n\nПроверяем функции на игре \"Семейный спор\"")
 	matrix, err = getMatrix(disputePath)
@@ -92,16 +95,9 @@ func main() {
 	printWins(matrix)
 	fmt.Printf("Находим равновесие по Нэшу\n")
 	resNash = eqNash(matrix)
-	for index := range resNash {
-		fmt.Printf(
-			"(%d %d)\n",
-			int(matrix[resNash[index].first][resNash[index].second].AWin),
-			int(matrix[resNash[index].first][resNash[index].second].BWin),
-		)
-	}
-	//fmt.Println(eqNash(matrix))
-	// fmt.Printf("\nНаходим оптимум по Парето\n")
-	// fmt.Println(eqPareto(matrix))
+	printCells(matrix, resNash)
+	fmt.Printf("\nНаходим оптимум по Парето\n")
+	printCells(matrix, eqPareto(matrix))
 
 	fmt.Println("\n\nПроверяем функции на игре \"Дилемма заключённого\"")
 	matrix, err = getMatrix(prisonersPath)
@@ -111,16 +107,9 @@ func main() {
 	printWins(matrix)
 	fmt.Printf("Находим равновесие по Нэшу\n")
 	resNash = eqNash(matrix)
-	for index := range resNash {
-		fmt.Printf(
-			"(%d %d)\n",
-			int(matrix[resNash[index].first][resNash[index].second].AWin),
-			int(matrix[resNash[index].first][resNash[index].second].BWin),
-		)
-	}
-	//fmt.Println(eqNash(matrix))
-	// fmt.Printf("\nНаходим оптимум по Парето\n")
-	// fmt.Println(eqPareto(matrix))
+	printCells(matrix, resNash)
+	fmt.Printf("\nНаходим оптимум по Парето\n")
+	printCells(matrix, eqPareto(matrix))
 
 	fmt.Println("\n\nРешаем игру своего варианта")
 	matrix, err = getMatrix(defaultPath)
@@ -130,14 +119,7 @@ func main() {
 	printWins(matrix)
 	fmt.Printf("Находим равновесие по Нэшу\n")
 	resNash = eqNash(matrix)
-	for index := range resNash {
-		fmt.Printf(
-			"(%d %d)\n",
-			int(matrix[resNash[index].first][resNash[index].second].AWin),
-			int(matrix[resNash[index].first][resNash[index].second].BWin),
-		)
-	}
-	//fmt.Println(eqNash(matrix))
-	// fmt.Printf("\nНаходим оптимум по Парето\n")
-	// fmt.Println(eqPareto(matrix))
+	printCells(matrix, resNash)
+	fmt.Printf("\nНаходим оптимум по Парето\n")
+	printCells(matrix, eqPareto(matrix))
 }
