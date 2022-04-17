@@ -173,4 +173,11 @@ func main() {
 		fmt.Printf("\nПересечение решений\n")
 		printCells(matrix, cross)
 	}
+	x, y, v1, v2 := solution(matrix)
+	fmt.Printf("Стратегия игрока A ")
+	printSlice(x)
+	fmt.Printf("Стратегия игрока B ")
+	printSlice(y)
+	fmt.Printf("Выигрыш первого %.3f\nВыигрыш второго %.3f", v1, v2)
+
 }

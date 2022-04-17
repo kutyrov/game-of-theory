@@ -73,20 +73,6 @@ func checkPoint(matrix [][]Win, i, j int) bool {
 			}
 		}
 	}
-	// for index := range matrix {
-	// 	if matrix[index][j].AWin >= cell.AWin &&
-	// 		matrix[index][j].BWin >= cell.BWin &&
-	// 		index != i {
-	// 		flag = false
-	// 		break
-	// 	}
-	// 	if matrix[i][index].AWin >= cell.AWin &&
-	// 		matrix[i][index].BWin >= cell.BWin &&
-	// 		index != j {
-	// 		flag = false
-	// 		break
-	// 	}
-	// }
 	return flag
 }
 
@@ -127,13 +113,6 @@ func printWins(matrix [][]Win) {
 	if len(matrix) == 0 {
 		return
 	}
-	// for row := range matrix {
-	// 	fmt.Printf("%d,%d", matrix[row][0].AWin, matrix[row][0].BWin)
-	// 	for col := 1; col < len(matrix[row]); col++ {
-	// 		fmt.Printf("\t%d,%d", matrix[row][col].AWin, matrix[row][col].BWin)
-	// 	}
-	// 	fmt.Printf("\n")
-	// }
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.AlignRight)
 	for row := range matrix {
@@ -146,4 +125,25 @@ func printWins(matrix [][]Win) {
 		fmt.Fprint(w, "\t\n")
 	}
 	w.Flush()
+}
+
+func solution(matrix [][]Win) ([]float64, []float64, float64, float64) {
+	if len(eqNash(matrix)) == 2 {
+		A, B := winToMatrix(matrix)
+		B, _ = InverseMatrix(B)
+		A, _ = InverseMatrix(A)
+		v1 := 1 / sumMatrix(A)
+		v2 := 1 / sumMatrix(B)
+
+		temp := make([][]float64, 1)
+		temp[0] = generateU(len(B))
+		x := matrixOnFloat(multMatrix(temp, B), v2)
+		//fmt.Println(multMatrix(temp, B), x)
+
+		temp = TransposeMatrix(temp)
+		y := TransposeMatrix(matrixOnFloat(multMatrix(A, temp), v1))
+		return matrixToSlice(x), matrixToSlice(y), v1, v2
+	} else {
+		return nil, nil, 0, 0
+	}
 }
