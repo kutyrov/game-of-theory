@@ -178,6 +178,6 @@ func main() {
 	printSlice(x)
 	fmt.Printf("Стратегия игрока B ")
 	printSlice(y)
-	fmt.Printf("Выигрыш первого %.3f\nВыигрыш второго %.3f", v1, v2)
+	fmt.Printf("Выигрыш первого %.3f\nВыигрыш второго %.3f\n", v1, v2)
 
 }
