@@ -18,8 +18,19 @@ const defaultMatrixSize = 2
 const eps = 0.1
 
 func crossing(a, b []pair) []pair {
-	//to do
-	return nil
+	if len(a) == 0 || len(b) == 0 {
+		return make([]pair, 0)
+	}
+
+	data := make([]pair, 0)
+	for _, valueA := range a {
+		for _, valueB := range b {
+			if valueA == valueB {
+				data = append(data, valueA)
+			}
+		}
+	}
+	return data
 }
 
 func printCells(matrix [][]Win, data []pair) {
@@ -70,8 +81,16 @@ func main() {
 		fmt.Println("Решений нет")
 	}
 	printCells(matrix, resNash)
-	fmt.Printf("\nНаходим оптимум по Парето\n")
-	printCells(matrix, eqPareto(matrix))
+	fmt.Printf("Находим оптимум по Парето\n")
+	reshPareto := eqPareto(matrix)
+	printCells(matrix, reshPareto)
+	cross := crossing(resNash, reshPareto)
+	if len(cross) == 0 {
+		fmt.Printf("\nПересечений решений нет\n")
+	} else {
+		fmt.Printf("\nПересечение решений\n")
+		printCells(matrix, cross)
+	}
 
 	fmt.Println("\n\nПроверяем функции на игре \"Перекресток\"")
 	matrix, err := getMatrix(crossroadPath)
@@ -84,8 +103,16 @@ func main() {
 	fmt.Printf("Находим равновесие по Нэшу\n")
 	resNash = eqNash(matrix)
 	printCells(matrix, resNash)
-	fmt.Printf("\nНаходим оптимум по Парето\n")
-	printCells(matrix, eqPareto(matrix))
+	fmt.Printf("Находим оптимум по Парето\n")
+	reshPareto = eqPareto(matrix)
+	printCells(matrix, reshPareto)
+	cross = crossing(resNash, reshPareto)
+	if len(cross) == 0 {
+		fmt.Printf("\nПересечений решений нет\n")
+	} else {
+		fmt.Printf("\nПересечение решений\n")
+		printCells(matrix, cross)
+	}
 
 	fmt.Println("\n\nПроверяем функции на игре \"Семейный спор\"")
 	matrix, err = getMatrix(disputePath)
@@ -96,8 +123,16 @@ func main() {
 	fmt.Printf("Находим равновесие по Нэшу\n")
 	resNash = eqNash(matrix)
 	printCells(matrix, resNash)
-	fmt.Printf("\nНаходим оптимум по Парето\n")
-	printCells(matrix, eqPareto(matrix))
+	fmt.Printf("Находим оптимум по Парето\n")
+	reshPareto = eqPareto(matrix)
+	printCells(matrix, reshPareto)
+	cross = crossing(resNash, reshPareto)
+	if len(cross) == 0 {
+		fmt.Printf("\nПересечений решений нет\n")
+	} else {
+		fmt.Printf("\nПересечение решений\n")
+		printCells(matrix, cross)
+	}
 
 	fmt.Println("\n\nПроверяем функции на игре \"Дилемма заключённого\"")
 	matrix, err = getMatrix(prisonersPath)
@@ -108,8 +143,16 @@ func main() {
 	fmt.Printf("Находим равновесие по Нэшу\n")
 	resNash = eqNash(matrix)
 	printCells(matrix, resNash)
-	fmt.Printf("\nНаходим оптимум по Парето\n")
-	printCells(matrix, eqPareto(matrix))
+	fmt.Printf("Находим оптимум по Парето\n")
+	reshPareto = eqPareto(matrix)
+	printCells(matrix, reshPareto)
+	cross = crossing(resNash, reshPareto)
+	if len(cross) == 0 {
+		fmt.Printf("\nПересечений решений нет\n")
+	} else {
+		fmt.Printf("\nПересечение решений\n")
+		printCells(matrix, cross)
+	}
 
 	fmt.Println("\n\nРешаем игру своего варианта")
 	matrix, err = getMatrix(defaultPath)
@@ -120,6 +163,14 @@ func main() {
 	fmt.Printf("Находим равновесие по Нэшу\n")
 	resNash = eqNash(matrix)
 	printCells(matrix, resNash)
-	fmt.Printf("\nНаходим оптимум по Парето\n")
-	printCells(matrix, eqPareto(matrix))
+	fmt.Printf("Находим оптимум по Парето\n")
+	reshPareto = eqPareto(matrix)
+	printCells(matrix, reshPareto)
+	cross = crossing(resNash, reshPareto)
+	if len(cross) == 0 {
+		fmt.Printf("\nПересечений решений нет\n")
+	} else {
+		fmt.Printf("\nПересечение решений\n")
+		printCells(matrix, cross)
+	}
 }
