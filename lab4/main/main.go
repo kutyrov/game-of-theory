@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -44,5 +43,6 @@ func main() {
 	}
 	// fmt.Println(height, players, strategies)
 	head := generateTree(height, strategies)
-	fmt.Println(*head)
+	//fmt.Println(*head)
+	printTree(head)
 }

@@ -43,6 +43,38 @@ func randSlice(n int) []int {
 	return data
 }
 
+func printNode(n *node, level int) {
+	if n.parent == nil {
+		return
+	}
+	for i := 0; i < level-1; i++ {
+		fmt.Print("    ")
+	}
+	fmt.Print("|---")
+	fmt.Println(n.player, n.data)
+}
+
+func bypath(n *node, level int) {
+	if n == nil {
+		return
+	}
+	printNode(n, level)
+	//fmt.Println("обработка", n)
+	if n.children != nil {
+		level += 1
+		for _, child := range n.children {
+			bypath(child, level)
+		}
+	} else {
+		printNode(n, level)
+	}
+}
+
+func printTree(head *node) {
+	level := 0
+	bypath(head, level)
+}
+
 func generateTree(height int, strategies []int) *node {
 	// проверяем входные параметры
 	if height <= 0 {
@@ -62,7 +94,7 @@ func generateTree(height int, strategies []int) *node {
 	for i := range strategies {
 		head.children[i] = &node{&head, i, nil, 0, nil}
 	}
-	fmt.Println(head.children)
+	//fmt.Println(head.children)
 	//осталось сгенерировать height-1 уровень
 	thisLevel := head.children
 	//fmt.Println(thisLevel)
@@ -85,24 +117,34 @@ func generateTree(height int, strategies []int) *node {
 						nextLevel = append(nextLevel, n.children[index])
 					}
 				}
+				isLeaf := true
+				for _, child := range n.children {
+					if child != nil {
+						isLeaf = false
+					}
+				}
+				if isLeaf {
+					n.children = nil
+					n.data = randSlice(len(strategies))
+				}
 			}
 		}
 		thisLevel = make([]*node, len(nextLevel))
 		copy(thisLevel, nextLevel)
 	}
 	// в коненые вершины записываем случайные выигрыши
-	thisLevel = head.children
-	for i := 0; i < height-1; i++ {
-		nextLevel := make([]*node, 0)
-		for _, n := range thisLevel {
-			if n.children == nil {
-				n.data = randSlice(len(strategies))
-			} else {
-				nextLevel = append(nextLevel, n)
-			}
-		}
-		thisLevel = make([]*node, len(nextLevel))
-		copy(thisLevel, nextLevel)
-	}
+	// thisLevel = head.children
+	// for i := 0; i < height-1; i++ {
+	// 	nextLevel := make([]*node, 0)
+	// 	for _, n := range thisLevel {
+	// 		if n.children == nil {
+	// 			n.data = randSlice(len(strategies))
+	// 		} else {
+	// 			nextLevel = append(nextLevel, n)
+	// 		}
+	// 	}
+	// 	thisLevel = make([]*node, len(nextLevel))
+	// 	copy(thisLevel, nextLevel)
+	// }
 	return &head
 }
