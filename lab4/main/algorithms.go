@@ -40,22 +40,31 @@ func randSlice(n int) []int {
 	for i := range data {
 		data[i] = randInt(minRand, maxRand)
 	}
+	//fmt.Println(data)
 	return data
 }
 
 func printNode(n *node, level int) {
 	if n.parent == nil {
+		fmt.Print("корень ", n)
+		fmt.Printf("%p\n", n)
 		return
 	}
 	for i := 0; i < level-1; i++ {
 		fmt.Print("    ")
 	}
 	fmt.Print("|---")
+	//fmt.Printf("%p ", n)
+	//fmt.Println(*n)
 	fmt.Println(n.player, n.data)
 }
 
 func bypath(n *node, level int) {
 	if n == nil {
+		// for i := 0; i < level-1; i++ {
+		// 	fmt.Print("    ")
+		// }
+		// fmt.Println("|---", nil)
 		return
 	}
 	printNode(n, level)
@@ -65,8 +74,6 @@ func bypath(n *node, level int) {
 		for _, child := range n.children {
 			bypath(child, level)
 		}
-	} else {
-		printNode(n, level)
 	}
 }
 
@@ -85,6 +92,7 @@ func generateTree(height int, strategies []int) *node {
 			return nil
 		}
 	}
+
 	rand.Seed(time.Now().UnixNano())
 	// обозначаем корень дерева
 	head := node{nil, -1, nil, 0, nil}
@@ -94,16 +102,19 @@ func generateTree(height int, strategies []int) *node {
 	for i := range strategies {
 		head.children[i] = &node{&head, i, nil, 0, nil}
 	}
-	//fmt.Println(head.children)
+
 	//осталось сгенерировать height-1 уровень
 	thisLevel := head.children
 	//fmt.Println(thisLevel)
 
 	for i := 0; i < height-1; i++ {
 		nextLevel := make([]*node, 0)
+		// fmt.Println("level ", i+1)
 		// убедились, что на следующем уровне будут вершины
-		for len(nextLevel) == 0 && i != height-2 {
+		for len(nextLevel) == 0 {
 			for _, n := range thisLevel {
+				// fmt.Printf("%p ", n)
+				// fmt.Println(n)
 				n.children = make([]*node, strategies[n.player])
 				for index := 0; index < strategies[n.player]; index++ {
 					if randBool() {
@@ -123,14 +134,24 @@ func generateTree(height int, strategies []int) *node {
 						isLeaf = false
 					}
 				}
+				// fmt.Println("нач")
+				// fmt.Println(n)
 				if isLeaf {
 					n.children = nil
 					n.data = randSlice(len(strategies))
 				}
+				// fmt.Println(n)
+				// fmt.Println("кон")
 			}
 		}
 		thisLevel = make([]*node, len(nextLevel))
 		copy(thisLevel, nextLevel)
+		if i == height-2 {
+			for _, leaf := range thisLevel {
+				//fmt.Println(leaf)
+				leaf.data = randSlice(len(strategies))
+			}
+		}
 	}
 	// в коненые вершины записываем случайные выигрыши
 	// thisLevel = head.children
