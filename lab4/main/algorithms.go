@@ -44,14 +44,25 @@ func randSlice(n int) []int {
 	return data
 }
 
-func printNode(n *node, level int) {
+func printNode(n *node, level int, sep map[int]bool) {
 	if n.parent == nil {
-		fmt.Print("корень ", n)
-		fmt.Printf("%p\n", n)
+		// fmt.Print("корень ", n)
+		// fmt.Printf("%p\n", n)
 		return
 	}
+	//fmt.Println(sep)
 	for i := 0; i < level-1; i++ {
-		fmt.Print("    ")
+		v, ok := sep[i]
+		if ok {
+			if v {
+				fmt.Print("|   ")
+			} else {
+				fmt.Print("    ")
+			}
+		} else {
+			fmt.Print("    ")
+		}
+
 	}
 	fmt.Print("|---")
 	//fmt.Printf("%p ", n)
@@ -59,27 +70,60 @@ func printNode(n *node, level int) {
 	fmt.Println(n.player, n.data)
 }
 
-func bypath(n *node, level int) {
+func bypath(n *node, level int, sep map[int]bool) {
 	if n == nil {
 		// for i := 0; i < level-1; i++ {
-		// 	fmt.Print("    ")
+		// 	v, ok := sep[i]
+		// 	if ok {
+		// 		if v {
+		// 			fmt.Print("|   ")
+		// 		} else {
+		// 			fmt.Print("    ")
+		// 		}
+		// 	} else {
+		// 		fmt.Print("    ")
+		// 	}
 		// }
 		// fmt.Println("|---", nil)
 		return
 	}
-	printNode(n, level)
+	printNode(n, level, sep)
 	//fmt.Println("обработка", n)
 	if n.children != nil {
 		level += 1
-		for _, child := range n.children {
-			bypath(child, level)
+		for index, child := range n.children {
+			flag := false
+			for i := index + 1; i < len(n.children); i++ {
+				if n.children[i] != nil {
+					flag = true
+				}
+			}
+			if flag {
+				sep[level-1] = true
+			} else {
+				sep[level-1] = false
+			}
+			bypath(child, level, sep)
 		}
+		for i := 0; i < level-1; i++ {
+			v, ok := sep[i]
+			if ok {
+				if v {
+					fmt.Print("|   ")
+				} else {
+					fmt.Print("    ")
+				}
+			} else {
+				fmt.Print("    ")
+			}
+		}
+		fmt.Println()
 	}
 }
 
 func printTree(head *node) {
 	level := 0
-	bypath(head, level)
+	bypath(head, level, make(map[int]bool))
 }
 
 func generateTree(height int, strategies []int) *node {
