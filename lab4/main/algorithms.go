@@ -7,11 +7,11 @@ import (
 )
 
 type node struct {
-	parent   *node
-	player   int
-	children []*node
-	value    int
-	data     []int
+	parent     *node
+	player     int
+	children   []*node
+	strategies []int
+	data       []int
 }
 
 //генерирует случайное целое в интервале [min,max]
@@ -29,6 +29,15 @@ func randBool() bool {
 	} else {
 		return true
 	}
+}
+
+func appendFirst(data []int, value int) []int {
+	temp := make([]int, 0)
+	temp = append(temp, value)
+	for _, i := range data {
+		temp = append(temp, i)
+	}
+	return temp
 }
 
 func calculateValue(n *node) []int {
@@ -64,6 +73,7 @@ func calculateValue(n *node) []int {
 	}
 	if maxIndex != -1 {
 		n.data = n.children[maxIndex].data
+		n.strategies = appendFirst(n.children[maxIndex].strategies, maxIndex)
 	}
 	n.children = nil
 	t := n
@@ -111,7 +121,7 @@ func printNode(n *node, level int, sep map[int]bool) {
 	// fmt.Printf("%p ", n)
 	//fmt.Print(*n)
 	//fmt.Println(n.player, n.data)
-	fmt.Printf("(%d,%d)\n", n.player, n.data)
+	fmt.Printf("(%d,%d,%d)\n", n.player, n.data, n.strategies)
 	// fmt.Print(n.data)
 	// fmt.Printf(")\n")
 }
@@ -186,12 +196,12 @@ func generateTree(height int, strategies []int) *node {
 
 	rand.Seed(time.Now().UnixNano())
 	// обозначаем корень дерева
-	head := node{nil, -1, nil, 0, nil}
+	head := node{nil, -1, nil, make([]int, 0), nil}
 	head.children = make([]*node, len(strategies))
 
 	// на первом уровне должны присутстовать все игроки
 	for i := range strategies {
-		head.children[i] = &node{&head, i, nil, 0, nil}
+		head.children[i] = &node{&head, i, nil, make([]int, 0), nil}
 	}
 
 	//осталось сгенерировать height-1 уровень
@@ -213,7 +223,7 @@ func generateTree(height int, strategies []int) *node {
 							n,
 							(n.player + 1) % len(strategies),
 							nil,
-							0,
+							make([]int, 0),
 							nil,
 						}
 						nextLevel = append(nextLevel, n.children[index])
@@ -244,19 +254,5 @@ func generateTree(height int, strategies []int) *node {
 			}
 		}
 	}
-	// в коненые вершины записываем случайные выигрыши
-	// thisLevel = head.children
-	// for i := 0; i < height-1; i++ {
-	// 	nextLevel := make([]*node, 0)
-	// 	for _, n := range thisLevel {
-	// 		if n.children == nil {
-	// 			n.data = randSlice(len(strategies))
-	// 		} else {
-	// 			nextLevel = append(nextLevel, n)
-	// 		}
-	// 	}
-	// 	thisLevel = make([]*node, len(nextLevel))
-	// 	copy(thisLevel, nextLevel)
-	// }
 	return &head
 }
