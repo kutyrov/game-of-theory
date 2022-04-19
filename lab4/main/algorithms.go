@@ -31,6 +31,49 @@ func randBool() bool {
 	}
 }
 
+func calculateValue(n *node) []int {
+	//fmt.Printf("Обрабатывается вершина %p\n", n)
+	if n == nil {
+		return nil
+	}
+
+	// если не все потомки являются листьями
+	for i := range n.children {
+		if n.children[i] == nil {
+			continue
+		}
+		if n.children[i].children != nil {
+			//fmt.Printf("уход по стеку от вершины %p\n", n.children[i])
+			calculateValue(n.children[i])
+		}
+	}
+
+	// если все потомки являются листьями
+	if n.player == -1 {
+		return nil
+	}
+	max := minRand - 1
+	maxIndex := -1
+	for i := range n.children {
+		if n.children[i] != nil {
+			if n.children[i].data[n.player] > max {
+				max = n.children[i].data[n.player]
+				maxIndex = i
+			}
+		}
+	}
+	if maxIndex != -1 {
+		n.data = n.children[maxIndex].data
+	}
+	n.children = nil
+	t := n
+	for t.parent != nil {
+		t = t.parent
+	}
+	printTree(t)
+	return n.data
+}
+
 //генерирует случайный слайс длины n
 func randSlice(n int) []int {
 	if n < 0 {
@@ -65,9 +108,12 @@ func printNode(n *node, level int, sep map[int]bool) {
 
 	}
 	fmt.Print("|---")
-	//fmt.Printf("%p ", n)
-	//fmt.Println(*n)
-	fmt.Println(n.player, n.data)
+	// fmt.Printf("%p ", n)
+	//fmt.Print(*n)
+	//fmt.Println(n.player, n.data)
+	fmt.Printf("(%d,%d)\n", n.player, n.data)
+	// fmt.Print(n.data)
+	// fmt.Printf(")\n")
 }
 
 func bypath(n *node, level int, sep map[int]bool) {
@@ -122,6 +168,7 @@ func bypath(n *node, level int, sep map[int]bool) {
 }
 
 func printTree(head *node) {
+	fmt.Println("Выводим дерево")
 	level := 0
 	bypath(head, level, make(map[int]bool))
 }

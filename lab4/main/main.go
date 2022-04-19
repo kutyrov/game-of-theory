@@ -45,6 +45,8 @@ func main() {
 	head := generateTree(height, strategies)
 	//fmt.Println(*head)
 	printTree(head)
+
+	calculateValue(head)
 	// rand.Seed(time.Now().UnixNano())
 	// for i := 0; i < 100; i++ {
 	// 	fmt.Println(randSlice(5))
