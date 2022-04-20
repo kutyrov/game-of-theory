@@ -10,8 +10,8 @@ type node struct {
 	parent     *node
 	player     int
 	children   []*node
-	strategies []int
-	data       []int
+	strategies [][]int
+	data       [][]int
 }
 
 //генерирует случайное целое в интервале [min,max]
@@ -40,48 +40,78 @@ func appendFirst(data []int, value int) []int {
 	return temp
 }
 
-func calculateValue(n *node) []int {
+func calculateValue(n *node) {
 	//fmt.Printf("Обрабатывается вершина %p\n", n)
 	if n == nil {
-		return nil
+		return
+	}
+
+	if n.children == nil {
+		return
 	}
 
 	// если не все потомки являются листьями
 	for i := range n.children {
-		if n.children[i] == nil {
-			continue
-		}
-		if n.children[i].children != nil {
-			//fmt.Printf("уход по стеку от вершины %p\n", n.children[i])
+
+		if len(n.children[i].data) == 0 {
 			calculateValue(n.children[i])
 		}
 	}
 
-	// если все потомки являются листьями
+	// если текущая вершина это дерево, то уже ничего не делаем
 	if n.player == -1 {
-		return nil
+		return
 	}
-	max := minRand - 1
-	maxIndex := -1
+
+	// сначала найдем максмумы внутри одного потомка и сравним с максимами других потомков
+	maxs := make([]int, len(n.children))
+	maxIndexes := make([]int, 0)
+	for i := range maxs {
+		maxs[i] = minRand
+	}
+
+	// нашли максимумы внутри каждого потомка и записали их в массив
 	for i := range n.children {
-		if n.children[i] != nil {
-			if n.children[i].data[n.player] > max {
-				max = n.children[i].data[n.player]
-				maxIndex = i
+
+		for _, data := range n.children[i].data {
+			if data[n.player] > maxs[i] {
+				maxs[i] = data[n.player]
 			}
 		}
 	}
-	if maxIndex != -1 {
-		n.data = n.children[maxIndex].data
-		n.strategies = appendFirst(n.children[maxIndex].strategies, maxIndex)
+
+	// определили список потомков, которые надо перенести выше
+	max := minRand
+	for i, v := range maxs {
+		if v > max {
+			maxIndexes = make([]int, 0)
+			maxIndexes = append(maxIndexes, i)
+			max = v
+		} else if v == max {
+			maxIndexes = append(maxIndexes, i)
+		}
 	}
+
+	for _, i := range maxIndexes {
+		for j := range n.children[i].data {
+			n.data = append(n.data, n.children[i].data[j])
+			if len(n.children[i].strategies) != 0 {
+				n.strategies = append(n.strategies, appendFirst(n.children[i].strategies[j], i))
+			} else {
+				temp := make([]int, 1)
+				temp[0] = i
+				n.strategies = append(n.strategies, temp)
+			}
+		}
+	}
+
 	n.children = nil
 	t := n
 	for t.parent != nil {
 		t = t.parent
 	}
 	printTree(t)
-	return n.data
+	return
 }
 
 //генерирует случайный слайс длины n
@@ -196,12 +226,12 @@ func generateTree(height int, strategies []int) *node {
 
 	rand.Seed(time.Now().UnixNano())
 	// обозначаем корень дерева
-	head := node{nil, -1, nil, make([]int, 0), nil}
+	head := node{nil, -1, nil, make([][]int, 0), make([][]int, 0)}
 	head.children = make([]*node, len(strategies))
 
 	// на первом уровне должны присутстовать все игроки
 	for i := range strategies {
-		head.children[i] = &node{&head, i, nil, make([]int, 0), nil}
+		head.children[i] = &node{&head, i, nil, make([][]int, 0), make([][]int, 0)}
 	}
 
 	//осталось сгенерировать height-1 уровень
@@ -214,17 +244,22 @@ func generateTree(height int, strategies []int) *node {
 		// убедились, что на следующем уровне будут вершины
 		for len(nextLevel) == 0 {
 			for _, n := range thisLevel {
+				n.children = nil
+				n.data = make([][]int, 0)
+			}
+			for _, n := range thisLevel {
 				// fmt.Printf("%p ", n)
 				// fmt.Println(n)
 				n.children = make([]*node, strategies[n.player])
-				for index := 0; index < strategies[n.player]; index++ {
-					if randBool() {
+
+				if randBool() {
+					for index := 0; index < strategies[n.player]; index++ {
 						n.children[index] = &node{
 							n,
 							(n.player + 1) % len(strategies),
 							nil,
-							make([]int, 0),
-							nil,
+							make([][]int, 0),
+							make([][]int, 0),
 						}
 						nextLevel = append(nextLevel, n.children[index])
 					}
@@ -239,7 +274,8 @@ func generateTree(height int, strategies []int) *node {
 				// fmt.Println(n)
 				if isLeaf {
 					n.children = nil
-					n.data = randSlice(len(strategies))
+					n.data = append(n.data, randSlice(len(strategies)))
+					//n.data =
 				}
 				// fmt.Println(n)
 				// fmt.Println("кон")
@@ -250,7 +286,8 @@ func generateTree(height int, strategies []int) *node {
 		if i == height-2 {
 			for _, leaf := range thisLevel {
 				//fmt.Println(leaf)
-				leaf.data = randSlice(len(strategies))
+				leaf.data = append(leaf.data, randSlice(len(strategies)))
+				//leaf.data = randSlice(len(strategies))
 			}
 		}
 	}
