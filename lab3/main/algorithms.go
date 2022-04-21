@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"text/tabwriter"
 )
 
@@ -23,6 +24,123 @@ func MaxFromSlice(s []int) int {
 		}
 	}
 	return max
+}
+
+func pointInSlice(data []pair, value pair) bool {
+	for _, d := range data {
+		if d == value {
+			return true
+		}
+	}
+	return false
+}
+
+func FloatToString(input_num float64) string {
+	// to convert a float number to a string
+	return strconv.FormatFloat(input_num, 'f', 0, 64)
+}
+
+func chooseColor(f1, f2 bool) string {
+	colorRed := "\033[31m"
+	colorGreen := "\033[32m"
+	colorYellow := "\033[33m"
+	colorWhite := "\033[37m"
+	if f1 && f2 {
+		return colorRed
+	} else if f1 {
+		return colorGreen
+	} else if f2 {
+		return colorYellow
+	} else {
+		return colorWhite
+	}
+}
+
+func colorPrint(matrix [][]Win, reshNash []pair, reshPareto []pair) {
+	// colorRed := "\033[31m"
+	// colorGreen := "\033[32m"
+	// colorYellow := "\033[33m"
+	//colorReset := "\033[0m"
+	w := tabwriter.NewWriter(os.Stdout, 0, 25, 2, ' ', tabwriter.AlignRight)
+	// for row := range matrix {
+	// 	//fmt.Fprintf(w, "(%.2f,%.2f)", matrix[row][0].AWin, matrix[row][0].BWin)
+	// 	fmt.Fprint(w, "(", matrix[row][0].AWin, ",", matrix[row][0].BWin, ")")
+	// 	for col := 1; col < len(matrix[row]); col++ {
+	// 		//fmt.Fprintf(w, "\t(%.2f,%.2f)", matrix[row][col].AWin, matrix[row][col].BWin)
+	// 		fmt.Fprint(w, "\t(", matrix[row][col].AWin, ",", matrix[row][col].BWin, ")")
+	// 	}
+	// 	fmt.Fprint(w, "\t\n")
+	// }
+
+	for i := range matrix {
+		for j := range matrix[i] {
+			temp := pair{i, j}
+			flagNash := pointInSlice(reshNash, temp)
+			flagPareto := pointInSlice(reshPareto, temp)
+			// if flagNash && flagPareto {
+			// 	fmt.Fprintf(w, string(colorRed))
+			// } else if flagNash {
+			// 	fmt.Fprintf(w, string(colorGreen))
+			// } else if flagPareto {
+			// 	fmt.Fprintf(w, string(colorYellow))
+			// } else {
+			// 	fmt.Fprintf(w, string(colorReset))
+			// }
+			out := chooseColor(flagNash, flagPareto) + "(" + FloatToString(matrix[i][j].AWin) + "," + FloatToString(matrix[i][j].BWin) + ")"
+			// if j == 0 {
+			// 	//fmt.Print("начало строки")
+			// 	fmt.Fprint(w, out)
+			// } else {
+			// 	fmt.Fprint(w, "\t"+out)
+			// }
+			fmt.Fprint(w, "\t", out)
+		}
+		fmt.Fprint(w, "\t\n")
+	}
+	w.Flush()
+	fmt.Fprint(w, chooseColor(false, false))
+	w.Flush()
+	// 	if flagNash && flagPareto {
+	// 		fmt.Fprint(
+	// 			w,
+	// 			string(colorRed),
+	// 			"\t(",
+	// 			int(matrix[i][j].AWin),
+	// 			",",
+	// 			int(matrix[i][j].BWin),
+	// 			")",
+	// 		)
+	// 	} else if flagNash {
+	// 		fmt.Fprint(
+	// 			w,
+	// 			string(colorGreen),
+	// 			"\t(",
+	// 			int(matrix[i][j].AWin),
+	// 			",",
+	// 			int(matrix[i][j].BWin),
+	// 			")",
+	// 		)
+	// 	} else if flagPareto {
+	// 		fmt.Fprint(
+	// 			w,
+	// 			string(colorYellow),
+	// 			"\t(",
+	// 			int(matrix[i][j].AWin),
+	// 			",",
+	// 			int(matrix[i][j].BWin),
+	// 			")",
+	// 		)
+	// 	} else {
+	// 		fmt.Fprint(
+	// 			w,
+	// 			string(colorReset),
+	// 			"\t(",
+	// 			int(matrix[i][j].AWin),
+	// 			",",
+	// 			int(matrix[i][j].BWin),
+	// 			")",
+	// 		)
+	// 	}
 }
 
 func eqNash(matrix [][]Win) []pair {

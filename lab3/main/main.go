@@ -91,6 +91,8 @@ func main() {
 		fmt.Printf("\nПересечение решений\n")
 		printCells(matrix, cross)
 	}
+	fmt.Println("Выводим с цветами")
+	colorPrint(matrix, resNash, reshPareto)
 
 	fmt.Println("\n\nПроверяем функции на игре \"Перекресток\"")
 	matrix, err := getMatrix(crossroadPath)
