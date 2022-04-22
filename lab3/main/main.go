@@ -115,6 +115,8 @@ func main() {
 		fmt.Printf("\nПересечение решений\n")
 		printCells(matrix, cross)
 	}
+	fmt.Println("Выводим с цветами")
+	colorPrint(matrix, resNash, reshPareto)
 
 	fmt.Println("\n\nПроверяем функции на игре \"Семейный спор\"")
 	matrix, err = getMatrix(disputePath)
@@ -135,6 +137,8 @@ func main() {
 		fmt.Printf("\nПересечение решений\n")
 		printCells(matrix, cross)
 	}
+	fmt.Println("Выводим с цветами")
+	colorPrint(matrix, resNash, reshPareto)
 
 	fmt.Println("\n\nПроверяем функции на игре \"Дилемма заключённого\"")
 	matrix, err = getMatrix(prisonersPath)
@@ -155,6 +159,8 @@ func main() {
 		fmt.Printf("\nПересечение решений\n")
 		printCells(matrix, cross)
 	}
+	fmt.Println("Выводим с цветами")
+	colorPrint(matrix, resNash, reshPareto)
 
 	fmt.Println("\n\nРешаем игру своего варианта")
 	matrix, err = getMatrix(defaultPath)
@@ -175,6 +181,8 @@ func main() {
 		fmt.Printf("\nПересечение решений\n")
 		printCells(matrix, cross)
 	}
+	fmt.Println("Выводим с цветами")
+	colorPrint(matrix, resNash, reshPareto)
 	x, y, v1, v2 := solution(matrix)
 	fmt.Printf("Стратегия игрока A ")
 	printSlice(x)
