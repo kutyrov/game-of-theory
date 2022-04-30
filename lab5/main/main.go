@@ -1,111 +1,76 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"math"
+	"os"
+	"strconv"
+	"strings"
 )
 
-type coalition struct {
-	members []int
-	value   int
-}
+//const defaultPath = "data/example.txt"
 
-func factorial(n int) int {
-	if n < 0 {
-		return 0
-	}
-	if n == 0 {
-		return 1
-	}
-	number := 1
-	for i := 1; i <= n; i++ {
-		number *= i
-	}
-	return number
-}
+const defaultPath = "data/12.txt"
 
-func intersection(a, b coalition) []int {
-	data := make([]int, 0)
-	for _, i := range a.members {
-		for _, j := range b.members {
-			if i == j {
-				data = append(data, i)
+// возвращает кол-во игроков и выигрыши коалиций
+func getInput(path string) (int, []coalition) {
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	rowNumber := 0
+	players := 0
+	data := make([]coalition, 0)
+	for scanner.Scan() {
+		numbers := strings.Fields(scanner.Text())
+		if rowNumber == 0 {
+			players, err = strconv.Atoi(numbers[0])
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			if len(numbers) != int((math.Pow(2, float64(players)))-1) {
+				panic("Неправильное число параметров в строке выигрышей коалиций")
+			}
+			for i, sValue := range numbers {
+				value, err := strconv.Atoi(sValue)
+				if err != nil {
+					panic(err)
+				}
+				data = append(data, coalition{intToNumbers(i + 1), value})
 			}
 		}
-	}
-	return data
-}
 
-func union(a, b coalition) []int {
-	i, j := 0, 0
-	data := make([]int, 0)
-	for i < len(a.members) || j < len(b.members) {
-		if a.members[i] < b.members[j] {
-			data = append(data, a.members[i])
-			i += 1
-		} else if a.members[i] > b.members[j] {
-			data = append(data, b.members[j])
-			j += 1
-		} else {
-			data = append(data, a.members[i])
-			i += 1
-			j += 1
-		}
-	}
-	return data
-}
+		rowNumber += 1
 
-func binToNumbers(data []int) []int {
-	numbers := make([]int, 0)
-	for i := range data {
-		if data[i] == 1 {
-			numbers = append(numbers, i+1)
-		}
 	}
-	return numbers
-}
-
-func binToLen(data []int, l int) []int {
-	if l <= len(data) {
-		return data
-	}
-	newData := make([]int, l)
-	copy(newData, data)
-	return newData
-}
-
-func intToBin(number int) []int {
-	data := make([]int, 1)
-	if number <= 0 {
-		return data
-	}
-	n := 1
-	degree := 0
-	for n*2 <= number {
-		n *= 2
-		degree += 1
-		data = append(data, 0)
-	}
-	for number > 0 {
-		if n <= number {
-			number = number - n
-			data[degree] = 1
-		}
-		n /= 2
-		degree -= 1
-	}
-	return data
+	return players, data
 }
 
 func main() {
-	//d1 := intToBin(5)
-	//fmt.Println(binToLen(d1, 4))
-	//fmt.Println(binToNumbers(d1))
-	//d2 := intToBin(6)
-	//fmt.Println(binToLen(d1, 4))
-	//fmt.Println(binToNumbers(d2))
-	//c1 := coalition{binToNumbers(d1), 5}
-	//c2 := coalition{binToNumbers(d2), 6}
-	//fmt.Println(intersection(c1,c2))
-	//fmt.Println(union(c1,c2))
-	fmt.Println(factorial(3))
+	players, input := getInput(defaultPath)
+	if isSuperaddity(input) {
+		fmt.Println("Игра суперадддитивная")
+	} else {
+		fmt.Println("Игра не суперадддитивная")
+	}
+	fmt.Println()
+
+	if isConvex(input) {
+		fmt.Println("Игра выпуклая")
+	} else {
+		fmt.Println("Игра не выпуклая")
+	}
+	fmt.Println("\nВыводим коэффициенты игроков")
+	coefs := calculateCoefficients(players, input)
+	printSlice(coefs)
+
+	fmt.Println("\nПроверим аксиомы рационализации")
+	firstAksiom(coefs, input, players)
+	secondAksiom(coefs, input, players)
+
 }
